@@ -1,0 +1,66 @@
+#
+#  hnpreproc.cl
+#  HONIR preprocessor
+#
+#           Ver 1.00 2014/04/15 H.Akitaya
+#           Ver 1.01 2014/04/16 H.Akitaya
+#
+#  input : file(s) or @list-file
+#
+
+procedure hnpreproc ( object )
+
+string object { prompt = "Object Name" }
+bool opt = yes
+bool ira = yes
+bool partial = no
+string flat_sppol_irs = ""
+
+begin
+
+    string objname
+    string imgfiles, img, header_obj, header_expt
+    real expt_obj = 0.0
+    objname = object
+    
+    if( opt == yes ){
+        hntrimccd( "HN*opt00.fits",clean+ )
+	hnmkbias("HN*opt00_bt.fits", "bias_ave_bt.fits", 
+	  skiptrim+, partial=partial, clean+)
+	hnbsub( "HN*opt00_bt.fits", template="bias_ave_bt.fits", \
+	  over+, clean+ )
+        hedit( "*opt00_bt.fits", "DISPAXIS", 2, add+, ver-)
+        hnflatten( "HN*opt??_bs.fits", auto+, object=object, over+,\
+	  se_in="_bs" )
+    }
+    if( ira == yes ){
+        hntrimvirgo( "HN*ira??.fits", clean+ )
+        imgfiles = mktemp ( "tmp$tmp_hnpreproc1_" )
+        sections( "HN*ira??_bt.fits", option="fullname", > imgfiles )
+        list = imgfiles
+	while( fscan( list, img ) != EOF ){
+            hselect( img, "OBJECT", "yes", missing="INDEF" ) | scanf("%s", header_obj )
+	    if( header_obj == object ){
+	        hselect( img, "EXPTIME", yes, missing="0.0" ) | scanf("%s", header_expt )
+		expt = real( header_expt )
+ 	    }
+        }
+	if( access( imgfiles ) )
+	    delete( imgfiles, ver- )
+	if( expt == 0.0 ){
+	    error(1, "No object image found !" )
+        }
+	hnmkdark( "HN*ira??_bt.fits", "darkave.fits", dksel+, etsel+, \
+	    expt=expt, darklst="dark.lst", clean+ )
+        hndsubv( "HN*ira??_bt.fits", darklst="dark.lst", object=object, \
+            over+ )
+        hnflatten( "HN*ira??_ds.fits", auto+, object=object, over+ )
+	hnbpfix( "HN*ira??_fl.fits", calbp+, calds+, object=object, over+, \
+	    sffixpix+ )
+    }
+
+    print("# Done. (hnpreproc.cl)" )
+
+end
+
+# end of the script

@@ -1,0 +1,6 @@
+_in_images,s,a,,,,"Image Name"
+subext_in,s,h,"",,,
+subext_out,s,h,"_bt",,,
+mainext,s,h,".fits",,,
+imglist,*struct,h,"tmp$_hntrim_tmp55882a",,,
+mode,s,h,"ql",,,

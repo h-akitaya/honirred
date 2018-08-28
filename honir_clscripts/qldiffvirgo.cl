@@ -1,0 +1,72 @@
+#
+#  qldiffvirgo.cl
+#  HONIR Virgo image quick look : differential image
+#
+#           Ver 1.00 2013/01/27 H.Akitaya
+#           Ver 1.10 2014/03/09 H.Akitaya
+#
+#  usage: qlimgvirgo
+#
+
+procedure qlimgvirgo( _in_img1, _in_img2, _out_img )
+
+string _in_img1 { prompt = "Image Name"}
+string _in_img2 { prompt = "Image Name"}
+string _out_img { prompt = "Output Image Name" }
+bool ds9 = no
+
+begin
+
+  string in_img1, in_img2, out_img, tmp_diff
+  string file_in, mainext, se_in, se_out, img_root, fn_out_trim, img
+  string basedir, tmp_file, dscr
+
+  mainext=".fits"
+  se_in=""
+  se_out="_btx"
+
+  in_img1 = _in_img1
+  in_img2 = _in_img2
+  out_img = _out_img
+
+  if( access( out_img ) ){
+    print( "# Deleting old file..." )
+    imdelete( out_img, ver- )
+  }
+  if( ! access( in_img1 ) ){
+    error(1, "# File "//in_img1//" not found !" )
+  }
+  if( ! access( in_img2 ) ){
+    error(1, "# File "//in_img2//" not found !" )
+  }
+  tmp_diff = mktemp("tmp$_qldiffvirgo_")
+
+  imarith( in_img1, "-", in_img2, tmp_diff )
+
+  extsrm( tmp_diff, ".fits", "" ) | scanf( "%s", img_root )
+  fn_out_trim = img_root//"_btx.fits"
+
+  if( access( fn_out_trim ) ){
+    print( "# Deleting old file..." )
+    imdelete( fn_out_trim, ver- )
+  }
+  hntrimvirgo( tmp_diff//".fits", se_in="", se_out="_btx", \
+		>& "dev$null" )
+
+  imcopy( fn_out_trim, out_img, ver- )
+
+  # clean up
+  imdelete( fn_out_trim, ver-, >& "dev$null" )
+
+  print("# Quick look differential image "//out_img//" created.")
+  if (ds9 == yes ){
+	print("# Sending the image to ds9 ...")
+	xpaset( "-p ds9 frame 5" )
+	xpaset( "-p ds9 file", out_img )  
+  }
+  print("# Done." )
+
+
+end
+
+# end of the script
