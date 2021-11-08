@@ -31,8 +31,9 @@
 #       2014/07/21      H.Akitaya   Ver. 0.30 : calclimmag
 #       2014/11/30      H.Akitaya   Ver. 0.31 : hnmkpflvirgo
 #       2014/12/18      H.Akitaya   Ver. 0.32 : hnspecpol2
+#       2019/12/10      H.Akitaya   Ver. 0.33 : hnmkpflccd
 
-printf("# package : honir (2014/12/18; Ver 0.32)\n" )
+printf("# package : honir (2019/12/10; Ver 0.33)\n" )
 
 # load required packages
 imred
@@ -93,6 +94,7 @@ task hntrimcswp1 = clscript_dir$hntrimcswp1.cl
 task hnbpfixvirgo = clscript_dir$hnbpfixvirgo.cl
 task hnmkflatvirgo = clscript_dir$hnmkflatvirgo.cl
 task hnmkpflvirgo = clscript_dir$hnmkpflvirgo.cl
+task hnmkpflccd = clscript_dir$hnmkpflccd.cl
 task hnmkdarkvirgo = clscript_dir$hnmkdarkvirgo.cl
 task hnmkimgflat_ccd = clscript_dir$hnmkimgflat_ccd.cl
 task hnmkbias = clscript_dir$hnmkbias.cl
