@@ -12,13 +12,11 @@
 #           Ver 1.12 2014.04.07 H.Akitaya
 #               check already processed or not, ira image
 #           Ver 1.13 2014.04.14 H.Akitaya : bug-fix for y2 treatment
-#           Ver 1.14 2021.11.11 H.Akitaya : Adopt imjoin parameter modification
-#                                         for IRAF community V2.16.1+
 #
 #  input : file(s) or @list-file
 #
 
-procedure hntrimccd (images)
+procedure hntrimccd ( images )
 
 string images { prompt = "Image Name"}
 string se_in = ""
@@ -217,18 +215,7 @@ begin
 	print(tmp_image4, >> tmp_joinlist)
 
 	# bias subtraction
-	# Adopt IRAF V2.16.1+ community version (2021/11/11 H.A)
-	s1 = defpar("imjoin.joindim")
-	if (s1 == "yes") {
-            # for IRAF community version
-	    print("# IRAF community version imjoin")
-	    imjoin( input="@"//tmp_joinlist, output=fn_out, joindim=1, outtype="r")
-	}
-	else
-	{
-	    # for original versions
-            imjoin( input="@"//tmp_joinlist, output=fn_out, join_dimension=1, verbose- )
-	}
+        imjoin( input="@"//tmp_joinlist, output=fn_out, join_dimension=1, verbose- )
         hedit( fn_out, "HNTRIMC", yes, add+, verify- )
         printf("# %s -> %s\n", fn_in, fn_out )
 
